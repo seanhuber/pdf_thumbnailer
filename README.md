@@ -1,41 +1,50 @@
-# PdfThumbnailer
+pdf_thumbnailer
+==============
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/pdf_thumbnailer`. To experiment with that code, run `bin/console` for an interactive prompt.
+`pdf_thumbnailer` converts a folder structure containing `.pdf` files into a folder structure of `.png` files.  Each `.png` represents a single page of the pdf and can be scaled to one or more pixel widths/heights.
 
-TODO: Delete this and the text above, and describe your gem
 
-## Installation
+Requirements and Dependencies
+-----------------------------
 
-Add this line to your application's Gemfile:
+Developed/Tested with Ruby version 2.3, but it should work with any version >= 1.9.  Page image creation is done through the `pdftoppm` utility, which can be installed on \*NIX (Linux/OSX) operating systems.
+
+
+Installation
+-----------------------------
+
+Add to your `Gemfile`:
 
 ```ruby
-gem 'pdf_thumbnailer'
+gem 'pdf_thumbnailer', '~> 1.0'
 ```
 
-And then execute:
 
-    $ bundle
+Usage
+-----------------------------
 
-Or install it yourself as:
+First, configure `PdfThumbs`:
 
-    $ gem install pdf_thumbnailer
+```ruby
+PdfThumbs.configure(
+  pdf_dir: '/some/path/with/pdf/files',  # required
+  img_dir: '/where/to/save/page/images', # required
+  thumb_sizes: [1000, 500, 100] # max pixel lengths for the long side (height or width) of the page images
+)
+```
 
-## Usage
+To generate the page images, execute `.thumbnail!`:
 
-TODO: Write usage instructions here
+```ruby
+PdfThumbs.thumbnail! do |thumb_dir|
+  puts "Page thumbnails are located in: #{thumb_dir}"
+end
+```
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/pdf_thumbnailer.
+`thumbnail!` optionally accepts a code block with one argument.  This argument (`thumb_dir` in the above example) will be a string representing the path of the newly created directory containing page images for a particular pdf.  The folder structure `img_dir` will be identical to that of `pdf_dir` but for every `.pdf` file there will instead be a directory of the same name containing `.png` iamges.
 
 
-## License
+License
+-----------------------------
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
+MIT-LICENSE.
