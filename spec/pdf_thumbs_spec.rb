@@ -3,10 +3,6 @@ require 'spec_helper'
 describe PdfThumbs do
   it 'is configurable' do
     expect {
-      PdfThumbs.configure
-    }.to raise_error 'Missing required config option: :pdf_dir'
-
-    expect {
       PdfThumbs.configure(
         pdf_dir: '/some/path/of/pdfs'
       )
@@ -26,6 +22,21 @@ describe PdfThumbs do
         thumb_sizes: [1000, 500]
       )
     }.not_to raise_error
+  end
+
+  it 'can generate pdf page thumbnails for a single pdf file' do
+    img_dir = File.expand_path('../thumbnails', __FILE__)
+    thumb_sizes = [1000, 500]
+    PdfThumbs.configure img_dir: img_dir, thumb_sizes: thumb_sizes
+
+    thumb_dir = PdfThumbs.thumbnail_single! File.expand_path('../pdfs', __FILE__), 'First.pdf'
+    (1..3).each do |page_num| # First.pdf has 3 pages
+      thumb_sizes.each do |thumb_size|
+        expect(File).to exist(File.join(thumb_dir, "#{thumb_size}_#{page_num}.png"))
+      end
+    end
+
+    FileUtils.rm_rf img_dir
   end
 
   it 'can generate pdf page thumbnails' do
