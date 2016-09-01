@@ -29,12 +29,14 @@ describe PdfThumbs do
     thumb_sizes = [1000, 500]
     PdfThumbs.configure img_dir: img_dir, thumb_sizes: thumb_sizes
 
-    thumb_dir = PdfThumbs.thumbnail_single! File.expand_path('../pdfs', __FILE__), 'First.pdf'
+    num_pages = PdfThumbs.thumbnail_single! File.expand_path('../pdfs', __FILE__), 'First.pdf'
     (1..3).each do |page_num| # First.pdf has 3 pages
       thumb_sizes.each do |thumb_size|
-        expect(File).to exist(File.join(thumb_dir, "#{thumb_size}_#{page_num}.png"))
+        expect(File).to exist(File.join(img_dir, 'First.pdf', "#{thumb_size}_#{page_num}.png"))
       end
     end
+
+    expect(num_pages).to eql(3)
 
     FileUtils.rm_rf img_dir
   end

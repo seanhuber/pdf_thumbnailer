@@ -16,9 +16,8 @@ class PdfThumbs
     end
   end
 
-  # TODO: add spec and document in README.md
   def self.thumbnail_single! pdf_dir, relative_pdf_path
-    thumbnail_pdf pdf_dir, relative_pdf_path
+    thumbnail_pdf pdf_dir, relative_pdf_path, true
   end
 
   private
@@ -34,18 +33,20 @@ class PdfThumbs
     img_dir
   end
 
-  def self.thumbnail_pdf pdf_dir, relative_pdf_path
+  def self.thumbnail_pdf pdf_dir, relative_pdf_path, return_num_pages = false
     img_dir = clear_img_dir relative_pdf_path
+    num_pages = 0
 
-    @@thumb_sizes.each do |thumb_size|
+    @@thumb_sizes.each_with_index do |thumb_size, idx|
       `pdftoppm -png -scale-to #{thumb_size} "#{File.join(pdf_dir, relative_pdf_path)}" "#{img_dir}"`
 
       Dir.glob(File.join(img_dir, '-*.png')) do |img_path|
         page_num = File.basename(img_path, '.png').split('-')[-1].to_i
         File.rename(img_path, File.join(img_dir, "#{thumb_size}_#{page_num}.png"))
+        num_pages += 1 if return_num_pages && idx == 0
       end
     end
 
-    img_dir
+    return_num_pages ? num_pages : img_dir
   end
 end
